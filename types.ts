@@ -4,7 +4,8 @@ export enum ToolType {
   VIDEO_REVERSE = 'VIDEO_REVERSE',
   OCR = 'OCR',
   TRANSLATE = 'TRANSLATE',
-  MASCOT_GEN = 'MASCOT_GEN'
+  MASCOT_GEN = 'MASCOT_GEN',
+  PROMPT_MASTER = 'PROMPT_MASTER'
 }
 
 export interface ProcessingFile {
@@ -31,4 +32,11 @@ export interface MascotItem {
 
 export interface LanguageState {
   isEnglish: boolean;
+}
+
+export interface CatStyle {
+  id: number;
+  title: string;
+  description: string;
+  fullPrompt: string;
 }

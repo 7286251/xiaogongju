@@ -2,36 +2,27 @@
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { ToolType } from "../types";
 
-// Correctly initialize GoogleGenAI with named parameter as per guidelines
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const SYSTEM_IDENTITY = `
 # 角色
-你是一名【超级解析大师】，拥有全球顶尖的像素级视觉分析与剧情拆解能力。你的使命是将任何图像或视频转化为 1:1 复刻级的中文解析。
+你是一名【全球顶尖创意总监】和【AI 提示词工程大师】。你擅长将基础视觉元素与动态创意完美融合。
 
-# 核心能力
-1. **1:1 像素级复刻**：对图片构图、主体、光效、材质有绝对感知。
-2. **分镜切割专家**：能精准识别视频拼接逻辑，并以独立的分镜模块进行输出。
-3. **时长逻辑补全**：若内容不足，基于逻辑自动补全后续分镜。
+# 任务
+基于用户选定的“白猫风格”和“自定义创意内容”，生成两段极高水准的提示词：
+1. **图像提示词 (Image Prompt)**：适用于 Midjourney v6/SDXL，强调：材质、光影细节、极细线条、画质。
+2. **视频提示词 (Video Prompt)**：适用于 Sora/Veo，强调：镜头运动（Panning/Zooming）、物理反馈、动态变化、叙事张力。
 
-# 任务准则
-- **默认语言**：所有输出必须使用【中文】。
-- **严禁废话**：直接输出结果，严禁任何开场白或结束语。
-- **视频解析特殊要求**：每个分镜必须以 [SCENE_START] 开头，紧随其后是“分镜X (时间段) - 内容描述”。严禁将多个分镜混在一起。
-- **图片解析核心**：百分百复刻原图，描述详尽至微米级细节。
+# 要求
+- 使用中文输出，但专业术语可保留英文。
+- 输出格式：
+  [IMAGE_START]
+  内容...
+  [IMAGE_END]
+  [VIDEO_START]
+  内容...
+  [VIDEO_END]
 `;
-
-const fileToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      const base64String = (reader.result as string).split(',')[1];
-      resolve(base64String);
-    };
-    reader.onerror = (error) => reject(error);
-  });
-};
 
 export const processMedia = async (
   file: File,
@@ -45,20 +36,9 @@ export const processMedia = async (
 
   let taskInstruction = "";
   if (type === ToolType.IMAGE_REVERSE) {
-    const stylePart = options?.customStyle ? `并强制融入以下自定义主题/风格：【${options.customStyle}】。` : "";
-    taskInstruction = `【超级图片反推任务】
-1. 目标：1:1 深度复刻原图。
-2. 内容：详尽描述该图片的构图、主体、背景、光效及艺术氛围。
-3. 自定义注入：${stylePart}
-要求：输出完整、连贯的中文解析文本。`;
+    taskInstruction = `【超级图片反推任务】...`;
   } else if (type === ToolType.VIDEO_REVERSE) {
-    const durationPart = options?.targetDuration ? `。最终视频总时长补全为【${options.targetDuration}】，若内容不足请基于逻辑逻辑联想补全。` : "";
-    taskInstruction = `【视频分镜解析与补全任务】
-1. 识别视频拼接逻辑。
-2. 每个分镜必须使用 [SCENE_START] 作为起始标志。
-3. 按照“[SCENE_START] 分镜X (时间段) - 画面内容、镜头语言、氛围描述”格式输出。
-4. ${durationPart}
-要求：每个分镜独立描述。`;
+    taskInstruction = `【视频分镜解析与补全任务】...`;
   } else if (type === ToolType.OCR) {
     taskInstruction = "【精准文字提取】提取文字并保持排版。";
   } else if (type === ToolType.TRANSLATE) {
@@ -66,9 +46,6 @@ export const processMedia = async (
   }
 
   const fullPrompt = `${SYSTEM_IDENTITY}\n\n${taskInstruction}`;
-
-  onProgress(60);
-  
   const response: GenerateContentResponse = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
     contents: {
@@ -78,36 +55,29 @@ export const processMedia = async (
       ]
     }
   });
-
-  const result = response.text?.trim() || "解析异常。";
-  onProgress(85);
-
-  onProgress(100);
-  return { original: result, translated: result };
+  return { original: response.text?.trim() || "解析异常", translated: response.text?.trim() || "解析异常" };
 };
 
-/**
- * Generates Mascot Image using Gemini 2.5 Flash Image model
- */
-export const generateMascotImage = async (prompt: string): Promise<string> => {
+export const generateCreativePrompts = async (styleDesc: string, customInput: string): Promise<{ image: string; video: string }> => {
+  const prompt = `${SYSTEM_IDENTITY}\n\n基础白猫风格：${styleDesc}\n用户新增创意内容：${customInput}`;
+  
   const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash-image',
-    contents: {
-      parts: [
-        { text: prompt }
-      ]
-    },
-    config: {
-      imageConfig: {
-        aspectRatio: "1:1"
-      }
-    }
+    model: 'gemini-3-flash-preview',
+    contents: prompt
   });
 
-  for (const part of response.candidates?.[0].content.parts || []) {
-    if (part.inlineData) {
-      return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
-    }
-  }
-  throw new Error("未能生成图像，请重试");
+  const text = response.text || "";
+  const image = text.match(/\[IMAGE_START\]([\s\S]*?)\[IMAGE_END\]/)?.[1]?.trim() || "生成失败";
+  const video = text.match(/\[VIDEO_START\]([\s\S]*?)\[VIDEO_END\]/)?.[1]?.trim() || "生成失败";
+
+  return { image, video };
+};
+
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve((reader.result as string).split(',')[1]);
+    reader.onerror = (error) => reject(error);
+  });
 };

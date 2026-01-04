@@ -6,60 +6,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>小祖宗实用小工具 - 2026马年大吉</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --new-year-red: #8b0000;
+            --gold-glow: rgba(251, 191, 36, 0.4);
+        }
+
         body {
-            font-family: 'Noto Serif SC', serif;
-            background-color: #7b0000;
+            /* 采用通用的普通字体，确保清晰易读 */
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif;
+            background-color: var(--new-year-red);
+            color: white;
+            margin: 0;
             overflow-x: hidden;
         }
-        .font-festive {
-            font-family: 'Ma Shan Zheng', cursive;
+
+        /* 祥云动画 */
+        @keyframes cloud-float {
+            0% { transform: translateX(-100%) translateY(0); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateX(120vw) translateY(20px); opacity: 0; }
         }
+
+        /* 奔马动画 */
+        @keyframes horse-gallop {
+            0% { transform: translateX(-200px) scale(0.8); opacity: 0; }
+            10% { opacity: 0.1; }
+            50% { transform: translateX(50vw) scale(1) translateY(-20px); opacity: 0.15; }
+            90% { opacity: 0.1; }
+            100% { transform: translateX(110vw) scale(0.8); opacity: 0; }
+        }
+
+        .bg-cloud {
+            position: fixed;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.2;
+            animation: cloud-float 60s linear infinite;
+        }
+
+        .bg-horse {
+            position: fixed;
+            pointer-events: none;
+            z-index: -1;
+            font-size: 120px;
+            filter: blur(2px);
+            animation: horse-gallop 15s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #fbbf24;
+            border-radius: 4px;
+        }
+
+        /* 通用字体优化 */
+        .font-main {
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
         @keyframes fireworks {
             0% { transform: translateY(100vh) scale(0); opacity: 1; }
             50% { opacity: 1; }
             100% { transform: translateY(-20vh) scale(1.5); opacity: 0; }
         }
+        
         .firework {
             position: absolute;
             width: 4px;
             height: 4px;
             border-radius: 50%;
             pointer-events: none;
-        }
-        
-        /* Scanning Line Animation */
-        @keyframes scan {
-            0% { top: 0%; opacity: 0; }
-            5% { opacity: 1; }
-            95% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
-        }
-        
-        /* Flowing Light Animation for Progress Bar */
-        @keyframes progress-flow {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; }
-        }
-
-        /* Pulsing Glow */
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.4); }
-            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
-        }
-
-        /* Energy Surge Animation */
-        @keyframes energy-surge {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-
-        /* Galloping Pulse */
-        @keyframes galloping-pulse {
-            0% { transform: scaleX(1); opacity: 0.3; }
-            50% { transform: scaleX(1.1); opacity: 0.7; }
-            100% { transform: scaleX(1); opacity: 0.3; }
         }
 
         .scan-line {
@@ -72,10 +97,20 @@
             z-index: 10;
         }
 
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            100% { top: 100%; opacity: 0; }
+        }
+
         .progress-flow-bg {
             background: linear-gradient(90deg, #b45309, #f59e0b, #fbbf24, #f59e0b, #b45309);
             background-size: 200% 100%;
             animation: progress-flow 2s linear infinite;
+        }
+
+        @keyframes progress-flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
         }
 
         .energy-bar-shine {
@@ -89,37 +124,9 @@
             animation: energy-surge 1.5s infinite linear;
         }
 
-        .horse-bg {
-            opacity: 0.05;
-            position: fixed;
-            bottom: -50px;
-            right: -50px;
-            z-index: -1;
-            transform: rotate(-15deg);
-        }
-        
-        .progress-glow {
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(123, 0, 0, 0.1);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(251, 191, 36, 0.3);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(251, 191, 36, 0.5);
+        @keyframes energy-surge {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
     </style>
 <script type="importmap">
@@ -135,6 +142,5 @@
 </head>
 <body>
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
 </body>
 </html>

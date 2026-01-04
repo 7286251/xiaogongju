@@ -72,7 +72,7 @@ const MascotModule: React.FC<MascotModuleProps> = ({ onCopy }) => {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
-        contents: `你是一名顶级 AI 绘画提示词优化专家。请基于以下大师级线稿描述，进行深度润色，使其艺术感更强，更符合 Midjourney v6 或 Stable Diffusion 3 的顶级渲染标准。保持原有的“祝传禧”抽象风格和中国红背景色调，输出一段更极致的中文提示词：\n\n${mascot.prompt}`
+        contents: `你是一名顶级 AI 绘画提示词优化专家。请基于以下描述进行深度润色，使其艺术感更强，输出一段更极致的中文提示词：\n\n${mascot.prompt}`
       });
 
       const newPrompt = response.text || mascot.prompt;
@@ -88,10 +88,10 @@ const MascotModule: React.FC<MascotModuleProps> = ({ onCopy }) => {
     <div className="animate-in fade-in zoom-in-95 duration-700">
       <div className="bg-red-900/40 p-12 rounded-[3.5rem] border-2 border-yellow-600/30 backdrop-blur-2xl shadow-2xl relative overflow-hidden group mb-12 text-center">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent progress-flow-bg"></div>
-        <h2 className="text-4xl md:text-6xl font-festive text-yellow-500 mb-6 drop-shadow-lg">2026 瑞兽呈祥 · 大师级提示词生成</h2>
-        <p className="max-w-3xl mx-auto text-yellow-200/80 leading-relaxed text-lg font-light">
+        <h2 className="text-4xl md:text-6xl font-black text-yellow-500 mb-6 drop-shadow-lg tracking-tight">2026 瑞兽呈祥 · 大师提示词</h2>
+        <p className="max-w-3xl mx-auto text-yellow-200/80 leading-relaxed text-lg font-bold">
           融合“祝传禧”抽象线稿风格，每一个字符都承载着千年的祥瑞底蕴。
-          选择心仪吉祥物，由超级 AI 为您生成可 1:1 还原顶级画质的生成提示词。
+          选择心仪吉祥物，由超级 AI 为您生成可还原顶级画质的提示词。
         </p>
       </div>
 
@@ -101,17 +101,14 @@ const MascotModule: React.FC<MascotModuleProps> = ({ onCopy }) => {
             key={m.id} 
             className="bg-red-950/40 border-2 border-yellow-600/20 rounded-[3rem] overflow-hidden group hover:border-yellow-500/60 transition-all duration-500 hover:-translate-y-3 flex flex-col shadow-2xl relative"
           >
-            {/* 饰纹背景 */}
-            <div className="absolute top-4 right-4 text-4xl opacity-10 pointer-events-none group-hover:opacity-20 transition-opacity">🐎</div>
-            
             <div className="p-10 flex-grow flex flex-col">
               <div className="flex items-center justify-between mb-4">
-                 <h3 className="text-3xl font-festive text-yellow-500 tracking-wider">{m.name}</h3>
-                 <span className="text-[10px] bg-yellow-500/10 px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-500 font-black tracking-widest">PROMPT V1.0</span>
+                 <h3 className="text-3xl font-black text-yellow-500 tracking-wider">{m.name}</h3>
+                 <span className="text-[10px] bg-yellow-500/10 px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-500 font-black tracking-widest">V1.0</span>
               </div>
               
               <div className="bg-red-950/60 rounded-2xl p-6 border border-yellow-500/10 min-h-[220px] max-h-[300px] overflow-y-auto mb-8 scrollbar-thin scrollbar-thumb-yellow-500/20">
-                <p className="text-sm text-yellow-100/90 leading-relaxed font-mono tracking-wide">
+                <p className="text-sm text-yellow-100/90 leading-relaxed font-bold tracking-wide">
                   {m.prompt}
                 </p>
               </div>
@@ -122,17 +119,17 @@ const MascotModule: React.FC<MascotModuleProps> = ({ onCopy }) => {
                   className="w-full py-4 rounded-2xl bg-gradient-to-r from-yellow-600 to-yellow-400 text-red-900 font-black text-sm tracking-[0.2em] uppercase shadow-lg shadow-yellow-600/20 active:scale-95 transition-all flex items-center justify-center gap-3"
                 >
                   <span>📋</span>
-                  <span>一键复制大师提示词</span>
+                  <span>复制提示词</span>
                 </button>
                 <button 
                   onClick={() => handleRefine(m.id)}
                   disabled={refiningId === m.id}
-                  className={`w-full py-3.5 rounded-2xl border-2 border-yellow-500/30 text-yellow-500 font-bold text-xs tracking-widest uppercase flex items-center justify-center gap-2 transition-all hover:bg-yellow-500/10 ${refiningId === m.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`w-full py-3.5 rounded-2xl border-2 border-yellow-500/30 text-yellow-500 font-black text-xs tracking-widest uppercase flex items-center justify-center gap-2 transition-all hover:bg-yellow-500/10 ${refiningId === m.id ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   {refiningId === m.id ? (
-                    <><span className="w-3 h-3 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin"></span>正在深度润色...</>
+                    <><span className="w-3 h-3 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin"></span>深度润色中...</>
                   ) : (
-                    <><span>✨</span>AI 顶级艺术优化</>
+                    <><span>✨</span>AI 艺术优化</>
                   )}
                 </button>
               </div>

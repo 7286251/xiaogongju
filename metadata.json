@@ -1,0 +1,7 @@
+{
+  "name": "小祖宗实用小工具",
+  "description": "一个融合2026马年新春氛围的强大AI工具集，包含图片视频反推提示词、精准文字提取及多语言图片翻译功能。",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

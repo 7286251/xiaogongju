@@ -3,7 +3,8 @@ export enum ToolType {
   IMAGE_REVERSE = 'IMAGE_REVERSE',
   VIDEO_REVERSE = 'VIDEO_REVERSE',
   OCR = 'OCR',
-  TRANSLATE = 'TRANSLATE'
+  TRANSLATE = 'TRANSLATE',
+  MASCOT_GEN = 'MASCOT_GEN'
 }
 
 export interface ProcessingFile {
@@ -15,6 +16,17 @@ export interface ProcessingFile {
   result?: string;
   translatedResult?: string;
   error?: string;
+  customStyle?: string;
+  targetDuration?: string;
+}
+
+export interface MascotItem {
+  id: string;
+  name: string;
+  description: string;
+  prompt: string;
+  imageUrl?: string;
+  isGenerating: boolean;
 }
 
 export interface LanguageState {
